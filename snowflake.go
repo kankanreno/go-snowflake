@@ -8,11 +8,11 @@ import (
 // These constants are the bit lengths of snowflake ID parts.
 const (
 	TimestampLength = 41
-	MachineIDLength = 10
-	SequenceLength  = 12
-	MaxSequence     = 1<<SequenceLength - 1
+	MachineIDLength = 4
+	SequenceLength  = 6
 	MaxTimestamp    = 1<<TimestampLength - 1
 	MaxMachineID    = 1<<MachineIDLength - 1
+	MaxSequence     = 1<<SequenceLength - 1
 
 	machineIDMoveLength = SequenceLength
 	timestampMoveLength = MachineIDLength + SequenceLength
@@ -97,11 +97,11 @@ func SetStartTime(s time.Time) {
 	startTime = s
 }
 
-// SetMachineID specify the machine ID. It will panic when machineid > max limit for 2^10-1.
+// SetMachineID specify the machine ID. It will panic when machineid > max limit for 2^4-1.
 // This function is thread-unsafe, recommended you call him in the main function.
 func SetMachineID(m uint16) {
 	if m > MaxMachineID {
-		panic("The machineid cannot be greater than 1023")
+		panic("The machineid cannot be greater than 16")
 	}
 	machineID = int(m)
 }
