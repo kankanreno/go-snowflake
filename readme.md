@@ -51,7 +51,7 @@ Based on this, we created this package and integrated multiple sequence-number p
 ## Installation
 
 ```shell
-$ go get github.com/godruoyi/go-snowflake
+$ go get github.com/kankanreno/go-snowflake
 ```
 
 ## Usage
@@ -64,7 +64,7 @@ package main
 import (
     "fmt"
 
-    "github.com/godruoyi/go-snowflake"
+    "github.com/kankanreno/go-snowflake"
 )
 
 func main() {
@@ -82,7 +82,7 @@ package main
 import (
     "fmt"
 
-    "github.com/godruoyi/go-snowflake"
+    "github.com/kankanreno/go-snowflake"
 )
 
 func main() {
@@ -105,7 +105,7 @@ import (
     "fmt"
     "time"
 
-    "github.com/godruoyi/go-snowflake"
+    "github.com/kankanreno/go-snowflake"
 )
 
 func main() {
@@ -124,7 +124,7 @@ import (
     "fmt"
     "time"
 
-    "github.com/godruoyi/go-snowflake"
+    "github.com/kankanreno/go-snowflake"
 )
 
 func main() {
@@ -151,7 +151,7 @@ import (
     "time"
     "net/http"
 
-    "github.com/godruoyi/go-snowflake"
+    "github.com/kankanreno/go-snowflake"
 )
 
 func main() {
@@ -179,7 +179,7 @@ import (
     "fmt"
     "time"
 
-    "github.com/godruoyi/go-snowflake"
+    "github.com/kankanreno/go-snowflake"
 )
 
 func yourSequenceNumber(ms int64) (uint16, error) {
