@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/godruoyi/go-snowflake"
+	"github.com/kankanreno/go-snowflake"
 )
 
 func main() {

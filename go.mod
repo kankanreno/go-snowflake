@@ -1,3 +1,3 @@
-module github.com/godruoyi/go-snowflake
+module github.com/kankanreno/go-snowflake
 
 go 1.15
