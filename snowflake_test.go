@@ -17,7 +17,7 @@ func TestID(t *testing.T) {
 	}
 
 	mp := make(map[uint64]bool)
-	for i := 0; i < 100000; i++ {
+	for i := 0; i < 1000000; i++ {
 		id, e := snowflake.NextID()
 		if e != nil {
 			t.Error(e)

@@ -1,3 +1,10 @@
+// Package snowflake is a network service for generating unique ID numbers at high scale with some simple guarantees.
+// The first bit is unused sign bit.
+// The second part consists of a 41-bit timestamp (milliseconds) whose value is the offset of the current time relative to a certain time.
+// The 5 bits of the third and fourth parts represent data center and worker, and max value is 2^5 -1 = 31.
+// The last part consists of 12 bits, its means the length of the serial number generated per millisecond per working node, a maximum of 2^12 -1 = 4095 IDs can be generated in the same millisecond.
+// In a distributed environment, five-bit datacenter and worker mean that can deploy 31 datacenters, and each datacenter can deploy up to 31 nodes.
+// The binary length of 41 bits is at most 2^41 -1 millisecond = 69 years. So the snowflake algorithm can be used for up to 69 years, In order to maximize the use of the algorithm, you should specify a start time for it.
 package snowflake
 
 import (
@@ -8,7 +15,7 @@ import (
 // These constants are the bit lengths of snowflake ID parts.
 const (
 	TimestampLength = 41
-	MachineIDLength = 4
+	MachineIDLength = 6
 	SequenceLength  = 6
 	MaxTimestamp    = 1<<TimestampLength - 1
 	MaxMachineID    = 1<<MachineIDLength - 1
@@ -22,17 +29,17 @@ const (
 //
 // When you want use the snowflake algorithm to generate unique ID, You must ensure: The sequence-number generated in the same millisecond of the same node is unique.
 // Based on this, we create this interface provide following reslover:
-//   AtomicResolver : base sync/atomic (by default).
+//
+//	AtomicResolver : base sync/atomic (by default).
 type SequenceResolver func(ms int64) (uint16, error)
 
-// default start time is 2008-11-10 23:00:00 UTC, why ? In the playground the time begins at 2009-11-10 23:00:00 UTC.
-// It's can run on golang playground.
 // default machineID is 0
 // default resolver is AtomicResolver
+// default startTime is 2020-01-01 00:00:00 UTC
 var (
 	resolver  SequenceResolver
 	machineID = 0
-	startTime = time.Date(2008, 11, 10, 23, 0, 0, 0, time.UTC)
+	startTime = time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
 )
 
 // ID use ID to generate snowflake id and it will ignore error. if you want error info, you need use NextID method.
@@ -63,7 +70,7 @@ func NextID() (uint64, error) {
 
 	df := int(elapsedTime(c, startTime))
 	if df < 0 || df > MaxTimestamp {
-		return 0, errors.New("The maximum life cycle of the snowflake algorithm is 2^41-1(millis), please check starttime")
+		return 0, errors.New("The maximum life cycle of the snowflake algorithm is 2^41(millis), please check starttime")
 	}
 
 	id := uint64((df << timestampMoveLength) | (machineID << machineIDMoveLength) | int(seq))
@@ -73,9 +80,11 @@ func NextID() (uint64, error) {
 // SetStartTime set the start time for snowflake algorithm.
 //
 // It will panic when:
-//   s IsZero
-//   s > current millisecond
-//   current millisecond - s > 2^41(69 years).
+//
+// s IsZero
+// s > current millisecond
+// current millisecond - s > 2^41(69 years).
+//
 // This function is thread-unsafe, recommended you call him in the main function.
 func SetStartTime(s time.Time) {
 	s = s.UTC()
@@ -97,11 +106,11 @@ func SetStartTime(s time.Time) {
 	startTime = s
 }
 
-// SetMachineID specify the machine ID. It will panic when machineid > max limit for 2^4-1.
+// SetMachineID specify the machine ID. It will panic when machineid > max limit for 2^6-1=63.
 // This function is thread-unsafe, recommended you call him in the main function.
 func SetMachineID(m uint16) {
 	if m > MaxMachineID {
-		panic("The machineid cannot be greater than 16")
+		panic("The machineid cannot be greater than 63")
 	}
 	machineID = int(m)
 }
@@ -126,7 +135,7 @@ type SID struct {
 func (id *SID) GenerateTime() time.Time {
 	ms := startTime.UTC().UnixNano()/1e6 + int64(id.Timestamp)
 
-	return time.Unix(0, (ms * int64(time.Millisecond))).UTC()
+	return time.Unix(0, ms*int64(time.Millisecond)).UTC()
 }
 
 // ParseID parse snowflake it to SID struct.

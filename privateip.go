@@ -52,7 +52,7 @@ func lower16BitPrivateIP() (uint16, error) {
 		return 0, err
 	}
 
-	// Snowflake macnineID max length is 10, max value is 1023
+	// Snowflake macnineID max length is 6, max value is 63
 	// If ip[2] > 3, return ip[2] + ip[3], but:
 	// 10.21.5.211 => return 5 + 211 = 216
 	// 10.21.4.212 => return 4 + 212 = 216
